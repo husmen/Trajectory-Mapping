@@ -13,7 +13,7 @@ port = 9999
 # connection to hostname on the port.
 s.connect((host, port))
 
-msgToSend = 'Houssem'+ "\r\n" 
+msgToSend = 'Houssem' 
 s.send(msgToSend.encode('ascii'))                             
 
 # Receive no more than 1024 bytes
