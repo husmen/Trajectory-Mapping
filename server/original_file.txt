@@ -1,0 +1,17 @@
+detailed work description:
+
+building a mesh network based on the remote provisioning example in the nRF5 SDK for mesh, with the ability to periodically send data from servers to the client like in the health example in the nRF5 SDK.
+
+
+1- there will be 2 server nodes and 1 client node
+2- the client starts by provisioning for remote servers as done in the remote provisioning example
+3- the client needs the following features added to it:
+	- the ability to send requests to the servers to initialize or stop sending data
+	- the ability to handle the received data: displaying timestamps, source ID, sensors data. and storing it in a log file
+
+4- the 2 servers will each have a couple sensors connected to them, a digital and an analog temperature sensor (DHT11/DHT22 and LM35)
+5- the servers need the following features added to it:
+	- the ability to interface with these 2 sensors and read data from them, and the onboard temperature sensor as a 3rd one, (I already have something implemented for the DHT11 but it is not well optimized)
+	- the ability to send sensor data periodically once it receives a request from the client, and only stop when it receives the stop request
+
+6- that's all!
