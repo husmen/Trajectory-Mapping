@@ -120,6 +120,7 @@ class Window(QMainWindow):
 
 
 class MainWidget(QWidget):
+    ''' doc string '''
 
     def __init__(self, parent):
         super(MainWidget, self).__init__(parent)
@@ -139,6 +140,7 @@ class MainWidget(QWidget):
 
 
 class ControlWidget(QWidget):
+    ''' doc string '''
 
     def __init__(self, parent):
         ''' docstring '''
@@ -175,6 +177,7 @@ class ControlWidget(QWidget):
 
 
 class CanvasWidget(QWidget):
+    ''' doc string '''
 
     def __init__(self, parent):
         super(CanvasWidget, self).__init__(parent)
