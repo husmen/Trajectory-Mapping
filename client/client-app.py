@@ -7,10 +7,13 @@ import socket
 import time
 
 #from PyQt5.QtCore import pyqtSignal, QObject
+#from PyQt5 import QtWidgets
+#from PyQt5.QtGui import QIcon
+#from PyQt5.QtWidgets import *
+
 from PyQt5.QtWidgets import (
     QMainWindow, QTextEdit, QPushButton, QAction, QFileDialog, QApplication, QSizePolicy,
     QVBoxLayout, QHBoxLayout, QWidget, QGridLayout, QComboBox, QDesktopWidget)
-from PyQt5.QtGui import QIcon
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
