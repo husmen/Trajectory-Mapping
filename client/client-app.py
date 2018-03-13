@@ -1,19 +1,21 @@
-''' docstring '''
 #!/usr/bin/python3
-# -*- coding: utf-8 -*-
+"""
+client-app.py
+"""
+
 import sys
 #import random
 import socket
 import time
 
 #from PyQt5.QtCore import pyqtSignal, QObject
-#from PyQt5 import QtWidgets
 #from PyQt5.QtGui import QIcon
 #from PyQt5.QtWidgets import *
 
+#from PyQt5.QtWidgets import (QAction, QHBoxLayout, QTextEdit, QSizePolicy )
 from PyQt5.QtWidgets import (
-    QMainWindow, QTextEdit, QPushButton, QAction, QFileDialog, QApplication, QSizePolicy,
-    QVBoxLayout, QHBoxLayout, QWidget, QGridLayout, QComboBox, QDesktopWidget)
+    QMainWindow, QPushButton, QFileDialog, QApplication,
+    QVBoxLayout, QWidget, QGridLayout, QComboBox, QDesktopWidget)
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 #from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -34,22 +36,22 @@ class Window(QMainWindow):
 
     def __init__(self):
         super().__init__()
+        self.conn_status = False
         self.init_ui()
 
     def init_ui(self):
         ''' docstring '''
 
         #self.com = Communicate()
-        # self.com.closeApp.connect(self.close)
-        self.conn_status = False
+        # self.com.close_app.connect(self.close)
 
         self.custom_wid = MainWidget(self)
-        self.custom_wid.controlWid.connectButton.clicked.connect(
-            self.connectServer)
-        self.custom_wid.controlWid.openButton.clicked.connect(self.openFile)
-        self.custom_wid.controlWid.closeButton.clicked.connect(self.closeApp)
-        # self.custom_wid.controlWid.closeButton.clicked.connect(QApplication.instance().quit)
-        # self.custom_wid.controlWid.closeButton.clicked.connect(QApplication.instance().quit)
+        self.custom_wid.control_wid.connectButton.clicked.connect(
+            self.connect_server)
+        self.custom_wid.control_wid.openButton.clicked.connect(self.open_file)
+        self.custom_wid.control_wid.closeButton.clicked.connect(self.close_app)
+        # self.custom_wid.control_wid.closeButton.clicked.connect(QApplication.instance().quit)
+        # self.custom_wid.control_wid.closeButton.clicked.connect(QApplication.instance().quit)
 
         self.setCentralWidget(self.custom_wid)
         self.statusBar()
@@ -68,18 +70,18 @@ class Window(QMainWindow):
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 
-    def connectServer(self):
+    def connect_server(self):
         ''' docstring '''
+
         # create a socket object
         self.sckt = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
         # connection to hostname on the port.
         self.sckt.connect((TCP_HOST, TCP_PORT))
         self.conn_status = True
 
         # send message to server
-        msgToSend = 'Houssem'
-        self.sckt.send(msgToSend.encode('ascii'))
+        msg_to_send = 'Houssem'
+        self.sckt.send(msg_to_send.encode('ascii'))
 
         # Receive no more than BUFFER_SIZE bytes
         msg = self.sckt.recv(BUFFER_SIZE)
@@ -88,7 +90,7 @@ class Window(QMainWindow):
         print(msg.decode('ascii'))
         self.statusBar().showMessage(msg.decode('ascii'))
 
-    def openFile(self):
+    def open_file(self):
         ''' docstring '''
         if self.conn_status:
             fname = QFileDialog.getOpenFileName(self, 'Open file', '/home')
@@ -102,17 +104,17 @@ class Window(QMainWindow):
                         data_buffer = f.read(BUFFER_SIZE)
                 print('File opened and sent toserver')
                 self.statusBar().showMessage('File opened and sent to server')
-                self.receiveFiles()
+                self.receive_files()
         else:
             self.statusBar().showMessage('First connect to server')
 
-    def closeApp(self):
+    def close_app(self):
         ''' docstring '''
         if self.conn_status:
             self.sckt.close()
         QApplication.instance().quit()
 
-    def receiveFiles(self):
+    def receive_files(self):
         ''' docstring'''
         time.sleep(5)
         self.statusBar().showMessage('Files received from server')
@@ -128,13 +130,13 @@ class MainWidget(QWidget):
     def init_ui(self):
         ''' docstring '''
 
-        self.controlWid = ControlWidget(self)
-        self.canvasWid = CanvasWidget(self)
+        self.control_wid = ControlWidget(self)
+        self.canvas_wid = CanvasWidget(self)
 
         grid = QGridLayout()
         grid.setSpacing(10)
-        grid.addWidget(self.controlWid, 1, 0)
-        grid.addWidget(self.canvasWid, 1, 1, 1, 7)
+        grid.addWidget(self.control_wid, 1, 0)
+        grid.addWidget(self.canvas_wid, 1, 1, 1, 7)
         self.setLayout(grid)
 
 

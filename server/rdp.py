@@ -1,12 +1,13 @@
+#!/usr/bin/python3
 """
 rdp
 
 Python implementation of the Ramer-Douglas-Peucker algorithm.
 """
-from math import sqrt
-from functools import partial
-import numpy as np
 import sys
+import numpy as np
+#from math import sqrt
+#from functools import partial
 
 if sys.version_info[0] >= 3:
     xrange = range
@@ -56,10 +57,10 @@ def rdp_rec(M, epsilon, dist=pldist):
             dmax = d
 
     if dmax > epsilon:
-        r1 = rdp_rec(M[:index + 1], epsilon, dist)
-        r2 = rdp_rec(M[index:], epsilon, dist)
+        r_1 = rdp_rec(M[:index + 1], epsilon, dist)
+        r_2 = rdp_rec(M[index:], epsilon, dist)
 
-        return np.vstack((r1[:-1], r2))
+        return np.vstack((r_1[:-1], r_2))
     else:
         return np.vstack((M[0], M[-1]))
 
@@ -75,7 +76,7 @@ def rdp(M, epsilon=0, dist=pldist):
     >>> rdp([[1, 1], [2, 2], [3, 3], [4, 4]])
     [[1, 1], [4, 4]]
 
-    This is a convenience wrapper around :func:`rdp.rdp_rec` 
+    This is a convenience wrapper around :func:`rdp.rdp_rec`
     that detects if the input is a numpy array
     in order to adapt the output accordingly. This means that
     when it is called using a Python list as argument, a Python
@@ -94,7 +95,7 @@ def rdp(M, epsilon=0, dist=pldist):
            [4, 4]])
 
     :param M: a series of points
-    :type M: numpy array with shape ``(n,d)`` where ``n`` is the number of points and ``d`` their dimension
+    :type M: numpy array with shape (n,d) where n is the number of points and d their dimension
     :param epsilon: epsilon in the rdp algorithm
     :type epsilon: float
     :param dist: distance function
