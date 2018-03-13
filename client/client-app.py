@@ -37,6 +37,7 @@ class Window(QMainWindow):
     def __init__(self):
         super().__init__()
         self.conn_status = False
+        self.sckt = None
         self.init_ui()
 
     def init_ui(self):
@@ -46,12 +47,12 @@ class Window(QMainWindow):
         # self.com.close_app.connect(self.close)
 
         self.custom_wid = MainWidget(self)
-        self.custom_wid.control_wid.connectButton.clicked.connect(
+        self.custom_wid.control_wid.connect_btn.clicked.connect(
             self.connect_server)
-        self.custom_wid.control_wid.openButton.clicked.connect(self.open_file)
-        self.custom_wid.control_wid.closeButton.clicked.connect(self.close_app)
-        # self.custom_wid.control_wid.closeButton.clicked.connect(QApplication.instance().quit)
-        # self.custom_wid.control_wid.closeButton.clicked.connect(QApplication.instance().quit)
+        self.custom_wid.control_wid.open_btn.clicked.connect(self.open_file)
+        self.custom_wid.control_wid.close_btn.clicked.connect(self.close_app)
+        # self.custom_wid.control_wid.close_btn.clicked.connect(QApplication.instance().quit)
+        # self.custom_wid.control_wid.close_btn.clicked.connect(QApplication.instance().quit)
 
         self.setCentralWidget(self.custom_wid)
         self.statusBar()
@@ -99,7 +100,7 @@ class Window(QMainWindow):
                 f = open(fname[0], 'rb')
                 with f:
                     data_buffer = f.read(BUFFER_SIZE)
-                    while (data_buffer):
+                    while data_buffer:
                         self.sckt.send(data_buffer)
                         data_buffer = f.read(BUFFER_SIZE)
                 print('File opened and sent toserver')
@@ -150,27 +151,26 @@ class ControlWidget(QWidget):
     def init_ui(self):
         ''' docstring '''
 
-        self.connectButton = QPushButton("Connect to Server")
-        self.openButton = QPushButton("Open File")
-        self.plotButton = QPushButton("Plot Trajectory")
-        self.queryButton = QPushButton("Query")
-        self.closeButton = QPushButton("Close")
+        self.connect_btn = QPushButton("Connect to Server")
+        self.open_btn = QPushButton("Open File")
+        self.plot_btn = QPushButton("Plot Trajectory")
+        self.query_btn = QPushButton("Query")
+        self.close_btn = QPushButton("Close")
 
-        self.comboBox = QComboBox(self)
-        self.comboBox.setToolTip(
-            "Choose between the full dataset, or the reduced one")
-        self.comboBox.addItem("Full Dataset")
-        self.comboBox.addItem("Reduced Dataset")
+        self.combo_box = QComboBox(self)
+        self.combo_box.setToolTip("Choose between full dataset/reduced dataset")
+        self.combo_box.addItem("Full Dataset")
+        self.combo_box.addItem("Reduced Dataset")
 
         self.vbox = QVBoxLayout(self)
         self.vbox.setSpacing(10)
         self.vbox.addStretch(1)
-        self.vbox.addWidget(self.connectButton)
-        self.vbox.addWidget(self.openButton)
-        self.vbox.addWidget(self.comboBox)
-        self.vbox.addWidget(self.plotButton)
-        self.vbox.addWidget(self.queryButton)
-        self.vbox.addWidget(self.closeButton)
+        self.vbox.addWidget(self.connect_btn)
+        self.vbox.addWidget(self.open_btn)
+        self.vbox.addWidget(self.combo_box)
+        self.vbox.addWidget(self.plot_btn)
+        self.vbox.addWidget(self.query_btn)
+        self.vbox.addWidget(self.close_btn)
         self.vbox.addStretch(1)
 
         self.setLayout(self.vbox)
@@ -193,7 +193,9 @@ class CanvasWidget(QWidget):
 
 class Networking():
     ''' doc string '''
-
+    def __init__(self, parent):
+        #TODO
+        pass
 
 if __name__ == '__main__':
 

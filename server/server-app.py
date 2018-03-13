@@ -88,7 +88,7 @@ class InputThread(threading.Thread):
                 if str(input_cmd) == "0":
                     flag = False
                     #EXIT_FLAG = True
-            except:
+            except KeyboardInterrupt:
                 flag = False
             else:
                 pass

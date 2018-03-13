@@ -59,7 +59,6 @@ def rdp_rec(M, epsilon, dist=pldist):
     if dmax > epsilon:
         r_1 = rdp_rec(M[:index + 1], epsilon, dist)
         r_2 = rdp_rec(M[index:], epsilon, dist)
-
         return np.vstack((r_1[:-1], r_2))
     else:
         return np.vstack((M[0], M[-1]))
