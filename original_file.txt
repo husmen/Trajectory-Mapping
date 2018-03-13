@@ -1,5 +1,0 @@
-jetpack
-
-playonlinux
-virtualbox
-qt-sdk
