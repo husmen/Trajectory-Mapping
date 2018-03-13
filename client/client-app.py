@@ -2,7 +2,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 import sys
-import random
+#import random
 import socket
 import time
 
@@ -16,7 +16,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout, QHBoxLayout, QWidget, QGridLayout, QComboBox, QDesktopWidget)
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+#from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 
@@ -38,6 +38,7 @@ class Window(QMainWindow):
         self.initUI()
 
     def initUI(self):
+        ''' docstring '''
 
         #self.com = Communicate()
         # self.com.closeApp.connect(self.close)
@@ -61,6 +62,7 @@ class Window(QMainWindow):
         self.show()
 
     def center(self):
+        ''' docstring '''
 
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
@@ -68,6 +70,7 @@ class Window(QMainWindow):
         self.move(qr.topLeft())
 
     def connectServer(self):
+        ''' docstring '''
         # create a socket object
         self.sckt = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -123,6 +126,7 @@ class MainWidget(QWidget):
         self.initUI()
 
     def initUI(self):
+        ''' docstring '''
 
         self.controlWid = ControlWidget(self)
         self.canvasWid = canvasWidget(self)
@@ -137,10 +141,12 @@ class MainWidget(QWidget):
 class ControlWidget(QWidget):
 
     def __init__(self, parent):
+        ''' docstring '''
         super(ControlWidget, self).__init__(parent)
         self.initUI()
 
     def initUI(self):
+        ''' docstring '''
 
         self.connectButton = QPushButton("Connect to Server")
         self.openButton = QPushButton("Open File")
