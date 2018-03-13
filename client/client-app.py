@@ -34,7 +34,6 @@ class Window(QMainWindow):
 
     def __init__(self):
         super().__init__()
-
         self.init_ui()
 
     def init_ui(self):
@@ -42,17 +41,17 @@ class Window(QMainWindow):
 
         #self.com = Communicate()
         # self.com.closeApp.connect(self.close)
-        self.connStatus = False
+        self.conn_status = False
 
-        self.custimWid = MainWidget(self)
-        self.custimWid.controlWid.connectButton.clicked.connect(
+        self.custom_wid = MainWidget(self)
+        self.custom_wid.controlWid.connectButton.clicked.connect(
             self.connectServer)
-        self.custimWid.controlWid.openButton.clicked.connect(self.openFile)
-        self.custimWid.controlWid.closeButton.clicked.connect(self.closeApp)
-        # self.custimWid.controlWid.closeButton.clicked.connect(QApplication.instance().quit)
-        # self.custimWid.controlWid.closeButton.clicked.connect(QApplication.instance().quit)
+        self.custom_wid.controlWid.openButton.clicked.connect(self.openFile)
+        self.custom_wid.controlWid.closeButton.clicked.connect(self.closeApp)
+        # self.custom_wid.controlWid.closeButton.clicked.connect(QApplication.instance().quit)
+        # self.custom_wid.controlWid.closeButton.clicked.connect(QApplication.instance().quit)
 
-        self.setCentralWidget(self.custimWid)
+        self.setCentralWidget(self.custom_wid)
         self.statusBar()
         self.statusBar().showMessage('Ready')
         #self.setGeometry(300, 300, 1280, 720)
@@ -76,7 +75,7 @@ class Window(QMainWindow):
 
         # connection to hostname on the port.
         self.sckt.connect((TCP_HOST, TCP_PORT))
-        self.connStatus = True
+        self.conn_status = True
 
         # send message to server
         msgToSend = 'Houssem'
@@ -91,7 +90,7 @@ class Window(QMainWindow):
 
     def openFile(self):
         ''' docstring '''
-        if self.connStatus:
+        if self.conn_status:
             fname = QFileDialog.getOpenFileName(self, 'Open file', '/home')
 
             if fname[0]:
@@ -109,7 +108,7 @@ class Window(QMainWindow):
 
     def closeApp(self):
         ''' docstring '''
-        if self.connStatus:
+        if self.conn_status:
             self.sckt.close()
         QApplication.instance().quit()
 
@@ -143,7 +142,6 @@ class ControlWidget(QWidget):
     ''' doc string '''
 
     def __init__(self, parent):
-        ''' docstring '''
         super(ControlWidget, self).__init__(parent)
         self.init_ui()
 
