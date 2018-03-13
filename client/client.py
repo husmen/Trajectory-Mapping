@@ -158,7 +158,8 @@ class ControlWidget(QWidget):
         self.close_btn = QPushButton("Close")
 
         self.combo_box = QComboBox(self)
-        self.combo_box.setToolTip("Choose between full dataset/reduced dataset")
+        self.combo_box.setToolTip(
+            "Choose between full dataset/reduced dataset")
         self.combo_box.addItem("Full Dataset")
         self.combo_box.addItem("Reduced Dataset")
 
@@ -193,9 +194,11 @@ class CanvasWidget(QWidget):
 
 class Networking():
     ''' doc string '''
+
     def __init__(self, parent):
-        #TODO
+        # TODO
         pass
+
 
 if __name__ == '__main__':
 
