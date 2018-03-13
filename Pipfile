@@ -14,6 +14,7 @@ python_version = "3.5"
 
 "pyqt5" = "*"
 matplotlib = "*"
+numpy = "*"
 
 
 [dev-packages]
