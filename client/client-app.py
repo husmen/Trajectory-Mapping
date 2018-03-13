@@ -18,7 +18,7 @@ from PyQt5.QtWidgets import (
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 #from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 # Global declarations
 #TCP_IP = 'localhost'
@@ -35,9 +35,9 @@ class Window(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.initUI()
+        self.init_ui()
 
-    def initUI(self):
+    def init_ui(self):
         ''' docstring '''
 
         #self.com = Communicate()
@@ -123,13 +123,13 @@ class MainWidget(QWidget):
 
     def __init__(self, parent):
         super(MainWidget, self).__init__(parent)
-        self.initUI()
+        self.init_ui()
 
-    def initUI(self):
+    def init_ui(self):
         ''' docstring '''
 
         self.controlWid = ControlWidget(self)
-        self.canvasWid = canvasWidget(self)
+        self.canvasWid = CanvasWidget(self)
 
         grid = QGridLayout()
         grid.setSpacing(10)
@@ -143,9 +143,9 @@ class ControlWidget(QWidget):
     def __init__(self, parent):
         ''' docstring '''
         super(ControlWidget, self).__init__(parent)
-        self.initUI()
+        self.init_ui()
 
-    def initUI(self):
+    def init_ui(self):
         ''' docstring '''
 
         self.connectButton = QPushButton("Connect to Server")
@@ -174,10 +174,10 @@ class ControlWidget(QWidget):
         self.setLayout(self.vbox)
 
 
-class canvasWidget(QWidget):
+class CanvasWidget(QWidget):
 
     def __init__(self, parent):
-        super(canvasWidget, self).__init__(parent)
+        super(CanvasWidget, self).__init__(parent)
 
         self.figure = Figure()
         self.canvas = FigureCanvas(self.figure)
