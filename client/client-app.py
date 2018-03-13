@@ -9,7 +9,7 @@ import time
 #from PyQt5.QtCore import pyqtSignal, QObject
 from PyQt5.QtWidgets import (
     QMainWindow, QTextEdit, QPushButton, QAction, QFileDialog, QApplication, QSizePolicy,
-     QVBoxLayout, QHBoxLayout, QWidget, QGridLayout, QComboBox, QDesktopWidget)
+    QVBoxLayout, QHBoxLayout, QWidget, QGridLayout, QComboBox, QDesktopWidget)
 from PyQt5.QtGui import QIcon
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -19,33 +19,34 @@ import matplotlib.pyplot as plt
 
 # Global declarations
 #TCP_IP = 'localhost'
-TCP_HOST = socket.gethostname() # get local machine name
-TCP_PORT = 9999 # set port
-BUFFER_SIZE = 1024 # set 1024 bytes as buffer 
+TCP_HOST = socket.gethostname()  # get local machine name
+TCP_PORT = 9999  # set port
+BUFFER_SIZE = 1024  # set 1024 bytes as buffer
 ORIGINAL_DATASET = 'dataset_original.txt'
 REDUCED_DATASET = 'dataset_reduced.txt'
 
 
-
 class Window(QMainWindow):
     ''' docstring '''
+
     def __init__(self):
         super().__init__()
 
         self.initUI()
 
     def initUI(self):
-        
-        #self.com = Communicate() 
-        #self.com.closeApp.connect(self.close)  
+
+        #self.com = Communicate()
+        # self.com.closeApp.connect(self.close)
         self.connStatus = False
 
         self.custimWid = MainWidget(self)
-        self.custimWid.controlWid.connectButton.clicked.connect(self.connectServer)
+        self.custimWid.controlWid.connectButton.clicked.connect(
+            self.connectServer)
         self.custimWid.controlWid.openButton.clicked.connect(self.openFile)
         self.custimWid.controlWid.closeButton.clicked.connect(self.closeApp)
-        #self.custimWid.controlWid.closeButton.clicked.connect(QApplication.instance().quit)
-        #self.custimWid.controlWid.closeButton.clicked.connect(QApplication.instance().quit)
+        # self.custimWid.controlWid.closeButton.clicked.connect(QApplication.instance().quit)
+        # self.custimWid.controlWid.closeButton.clicked.connect(QApplication.instance().quit)
 
         self.setCentralWidget(self.custimWid)
         self.statusBar()
@@ -57,7 +58,7 @@ class Window(QMainWindow):
         self.show()
 
     def center(self):
-        
+
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
@@ -82,7 +83,6 @@ class Window(QMainWindow):
         print(msg.decode('ascii'))
         self.statusBar().showMessage(msg.decode('ascii'))
 
-
     def openFile(self):
         ''' docstring '''
         if self.connStatus:
@@ -100,6 +100,7 @@ class Window(QMainWindow):
                 self.receiveFiles()
         else:
             self.statusBar().showMessage('First connect to server')
+
     def closeApp(self):
         ''' docstring '''
         if self.connStatus:
@@ -111,9 +112,10 @@ class Window(QMainWindow):
         time.sleep(5)
         self.statusBar().showMessage('Files received from server')
 
+
 class MainWidget(QWidget):
 
-    def __init__(self, parent):        
+    def __init__(self, parent):
         super(MainWidget, self).__init__(parent)
         self.initUI()
 
@@ -131,11 +133,11 @@ class MainWidget(QWidget):
 
 class ControlWidget(QWidget):
 
-    def __init__(self, parent):        
+    def __init__(self, parent):
         super(ControlWidget, self).__init__(parent)
         self.initUI()
 
-    def initUI(self): 
+    def initUI(self):
 
         self.connectButton = QPushButton("Connect to Server")
         self.openButton = QPushButton("Open File")
@@ -143,9 +145,9 @@ class ControlWidget(QWidget):
         self.queryButton = QPushButton("Query")
         self.closeButton = QPushButton("Close")
 
-
         self.comboBox = QComboBox(self)
-        self.comboBox.setToolTip("Choose between the full dataset, or the reduced one")
+        self.comboBox.setToolTip(
+            "Choose between the full dataset, or the reduced one")
         self.comboBox.addItem("Full Dataset")
         self.comboBox.addItem("Reduced Dataset")
 
@@ -162,9 +164,10 @@ class ControlWidget(QWidget):
 
         self.setLayout(self.vbox)
 
+
 class canvasWidget(QWidget):
 
-    def __init__(self, parent):        
+    def __init__(self, parent):
         super(canvasWidget, self).__init__(parent)
 
         self.figure = Figure()
@@ -175,8 +178,10 @@ class canvasWidget(QWidget):
 
         self.setLayout(self.vbox)
 
+
 class Networking():
     ''' doc string '''
+
 
 if __name__ == '__main__':
 

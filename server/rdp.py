@@ -81,7 +81,7 @@ def rdp(M, epsilon=0, dist=pldist):
     when it is called using a Python list as argument, a Python
     list is returned, and in case of an invocation using a numpy
     array, a NumPy array is returned.
-    
+
     Example:
 
     >>> from rdp import rdp

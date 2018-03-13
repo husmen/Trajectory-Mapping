@@ -7,9 +7,9 @@ import os
 
 # Global declarations
 #TCP_IP = 'localhost'
-TCP_HOST = socket.gethostname() # get local machine name
-TCP_PORT = 9999 # set port
-BUFFER_SIZE = 1024 # set 1024 bytes as buffer size
+TCP_HOST = socket.gethostname()  # get local machine name
+TCP_PORT = 9999  # set port
+BUFFER_SIZE = 1024  # set 1024 bytes as buffer size
 FILE_FULL = 'original_file.txt'
 FILE_REDUCED = 'new_file.txt'
 
@@ -64,18 +64,20 @@ class serverThread(threading.Thread):
 
             clientSocket.close()
 
+
 class inputThread(threading.Thread):
     def __init__(self, threadID, name):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.name = name
+
     def run(self):
         print("\n*** STARTING INPUT ROUTINE THREAD ***\n")
         flag = True
         while flag:
             try:
                 inputCMD = input("your command: ")
-                #print(inputCMD)
+                # print(inputCMD)
                 if str(inputCMD) == "0":
                     flag = False
                     #exitFlag = True
@@ -83,7 +85,8 @@ class inputThread(threading.Thread):
                 flag = False
             else:
                 pass
-        print("stop command received\n")        
+        print("stop command received\n")
+
 
 # Create new threads
 serverRoutine = serverThread(1, "Server Routine")
@@ -99,5 +102,5 @@ while inputRoutine.isAlive():
 # wait for threads to end
 serverRoutine.join(1)
 print("\n*** PROGRAM EXITING ***\n")
-#sys.exit(0)
+# sys.exit(0)
 os._exit(0)
