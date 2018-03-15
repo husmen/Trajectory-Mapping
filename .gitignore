@@ -1,6 +1,7 @@
 # Ignore unecessary files & folders
 
 *.txt
+*.html
 *.code-workspace
 .vscode/
 
