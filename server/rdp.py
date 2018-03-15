@@ -8,12 +8,29 @@ import sys
 import numpy as np
 #from math import sqrt
 #from functools import partial
+from math import radians, cos, sin, asin, sqrt
 
 if sys.version_info[0] >= 3:
     xrange = range
 
+def haversine_dist(lon1, lat1, lon2, lat2):
+    """
+    Calculate the great circle distance between two points 
+    on the earth (specified in decimal degrees)
+    """
+    # convert decimal degrees to radians
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
 
-def pldist(point, start, end):
+    # haversine formula
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    c = 2 * asin(sqrt(a))
+    r = 6371  # Radius of earth in kilometers. Use 3956 for miles
+    return c * r
+
+
+def pl_dist(point, start, end):
     """
     Calculates the distance from ``point`` to the line given
     by the points ``start`` and ``end``.
@@ -33,7 +50,7 @@ def pldist(point, start, end):
         np.linalg.norm(end - start))
 
 
-def rdp_rec(M, epsilon, dist=pldist):
+def rdp_rec(M, epsilon, dist=pl_dist):
     """
     Simplifies a given array of points.
 
@@ -44,7 +61,7 @@ def rdp_rec(M, epsilon, dist=pldist):
     :param epsilon: epsilon in the rdp algorithm
     :type epsilon: float
     :param dist: distance function
-    :type dist: function with signature ``f(point, start, end)`` -- see :func:`rdp.pldist`
+    :type dist: function with signature ``f(point, start, end)`` -- see :func:`rdp.pl_dist`
     """
     dmax = 0.0
     index = -1
@@ -64,7 +81,7 @@ def rdp_rec(M, epsilon, dist=pldist):
         return np.vstack((M[0], M[-1]))
 
 
-def rdp(M, epsilon=0, dist=pldist):
+def rdp(M, epsilon=0, dist=pl_dist):
     """
     Simplifies a given array of points using the Ramer-Douglas-Peucker
     algorithm.
@@ -98,7 +115,7 @@ def rdp(M, epsilon=0, dist=pldist):
     :param epsilon: epsilon in the rdp algorithm
     :type epsilon: float
     :param dist: distance function
-    :type dist: function with signature ``f(point, start, end)`` -- see :func:`rdp.pldist`
+    :type dist: function with signature ``f(point, start, end)`` -- see :func:`rdp.pl_dist`
     """
 
     if "numpy" in str(type(M)):
