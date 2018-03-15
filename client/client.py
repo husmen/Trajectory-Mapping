@@ -234,9 +234,9 @@ class MainWidget(QWidget):
 
         grid = QGridLayout()
         grid.setSpacing(10)
-        #grid.addWidget(self.control_wid, 1, 0)
+        grid.addWidget(self.control_wid, 1, 0)
         grid.addWidget(self.canvas_wid, 1, 1, 1, 7)
-        grid.addWidget(self.map_wid, 1, 1, 1, 7)
+        #grid.addWidget(self.map_wid, 1, 1, 1, 7)
         self.setLayout(grid)
 
 
@@ -250,10 +250,6 @@ class ControlWidget(QWidget):
     def init_ui(self):
         ''' docstring '''
 
-        #self.connect_host_label = QLab(self)
-        #self.connect_host = QLineEdit(self)
-        #self.connect_host.setMaximumWidth(200)
-        #self.connect_host.setFixedWidth(100)
         self.connect_btn = QPushButton("Connect to Server")
         self.open_btn = QPushButton("Open File")
         self.plot_btn = QPushButton("Plot Trajectory")
@@ -269,7 +265,6 @@ class ControlWidget(QWidget):
         self.vbox = QVBoxLayout(self)
         self.vbox.setSpacing(10)
         self.vbox.addStretch(1)
-        #self.vbox.addWidget(self.connect_host)
         self.vbox.addWidget(self.connect_btn)
         self.vbox.addWidget(self.open_btn)
         self.vbox.addWidget(self.combo_box)
