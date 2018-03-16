@@ -4,5 +4,6 @@
 *.html
 *.code-workspace
 .vscode/
+server/server2.py
 
 server/__pycache__/

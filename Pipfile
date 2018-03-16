@@ -18,6 +18,7 @@ numpy = "*"
 pylint = "*"
 "autopep8" = "*"
 rope = "*"
+mplleaflet = "*"
 
 
 [dev-packages]

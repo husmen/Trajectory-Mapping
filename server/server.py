@@ -9,6 +9,7 @@ import time
 import os
 
 from rdp import rdp
+from prquadtree import *
 
 # Global declarations
 #TCP_IP = 'localhost'
@@ -18,9 +19,13 @@ TCP_PORT = 9999  # set port
 BUFFER_SIZE = 1024  # set 1024 bytes as buffer size
 EPS = 0.001
 
+BOX_LIMIT = Box(Point(0,0), 180, 90)
+
 RECEIVED_FILE = 'file_received.txt'
 ORIGINAL_DATASET_FILE = 'dataset_original.txt'
 REDUCED_DATASET_FILE = 'dataset_reduced.txt'
+QUERY_ORIGINAL_DATASET_FILE = 'dataset_original_query.txt'
+QUERY_REDUCED_DATASET_FILE = 'dataset_reduced_query.txt'
 
 EXIT_FLAG = False
 
@@ -42,6 +47,8 @@ class ServerThread(threading.Thread):
         self.thread_id = threadID
         self.name = name
         self.client_socket = None
+        self.original_qtree = PRQuadTree(BOX_LIMIT)
+        self.reduced_qtree = PRQuadTree(BOX_LIMIT)
 
     def run(self):
         ''' docstring '''
@@ -70,18 +77,54 @@ class ServerThread(threading.Thread):
                 rsize = 0
                 while True:
                     data = self.client_socket.recv(BUFFER_SIZE)
-                    print('Received data = %s', (data))
+                    #print('Received data = %s', (data))
                     rsize = rsize + len(data)
                     f.write(data)
                     #fsize_current = os.path.getsize(RECEIVED_FILE)
-                    print(rsize)
+                    #print(rsize)
                     if rsize >= fsize:
                         print('Breaking from file write')
                         break
             print('Successfully get the file')
             self.process_data()
             self.send_files()
+            self.query()
+            self.send_files_2()
             self.client_socket.close()
+
+    def query(self):
+        """ docstring """
+        msg = self.client_socket.recv(BUFFER_SIZE)
+        q_coord = msg.decode('utf-8').split(',')
+
+        for i in range(4):
+            q_coord[i] = float(q_coord[i])
+
+        c , hw, hh = box_from_2p(Point(q_coord[0],q_coord[1]),Point(q_coord[2],q_coord[3]))
+        q_box = Box(c, hw, hh)
+        q_results_original = []
+        q_results_tmp = self.original_qtree.query_range(q_box)
+        for result in q_results_tmp:
+            q_results_original.append([result.x,result.y])
+
+        q_results_reduced = []
+        q_results_tmp = self.reduced_qtree.query_range(q_box)
+        for result in q_results_tmp:
+            q_results_reduced.append([result.x,result.y])
+
+        print(q_results_original)
+        print("\n\n\n")
+        print(q_results_reduced)
+
+        with open(QUERY_ORIGINAL_DATASET_FILE, 'w') as f:
+            print('Storing query original data ...')
+            for coord in q_results_original:
+                f.write("{},{}\n".format(coord[0], coord[1]))
+
+        with open(QUERY_REDUCED_DATASET_FILE, 'w') as f:
+            print('Storing query original data ...')
+            for coord in q_results_reduced:
+                f.write("{},{}\n".format(coord[0], coord[1]))
 
     def process_data(self):
         """ docstring """
@@ -89,17 +132,18 @@ class ServerThread(threading.Thread):
         original_dataset = []
         with open(RECEIVED_FILE, 'r') as f:
             lines_buffer = f.readlines()
-            print(lines_buffer)
+            #print(lines_buffer)
 
         for _ in range(6):
             del lines_buffer[0]
         for line in lines_buffer:
             tmp = line.split(',', 2)
-            tmp[0] = float(tmp[0])
-            tmp[1] = float(tmp[1])
+            tmp_buffer = float(tmp[0])
+            tmp[0] = float(tmp[1])
+            tmp[1] = tmp_buffer
             del tmp[2]
             original_dataset.append(tmp)
-        print(original_dataset)
+        #print(original_dataset)
 
         with open(ORIGINAL_DATASET_FILE, 'w') as f:
             print('Storing original data ...')
@@ -112,6 +156,13 @@ class ServerThread(threading.Thread):
             print('Storing reduced data ...')
             for coord in reduced_dataset:
                 f.write("{},{}\n".format(coord[0], coord[1]))
+
+        for coord in original_dataset:
+            self.original_qtree.insert(coord[0],coord[1])
+
+        for coord in reduced_dataset:
+            self.reduced_qtree.insert(coord[0],coord[1])
+        #print (reduced_qtree.print_all_points(reduced_qtree))
 
     def send_files(self):
         """ docstring """
@@ -128,6 +179,26 @@ class ServerThread(threading.Thread):
         self.client_socket.send(str(fsize).encode('utf-8'))
 
         with open(REDUCED_DATASET_FILE, 'rb') as f:
+            data_buffer = f.read(BUFFER_SIZE)
+            while data_buffer:
+                self.client_socket.send(data_buffer)
+                data_buffer = f.read(BUFFER_SIZE)
+
+    def send_files_2(self):
+        """ docstring """
+        fsize = os.path.getsize(QUERY_ORIGINAL_DATASET_FILE)
+        self.client_socket.send(str(fsize).encode('utf-8'))
+
+        with open(QUERY_ORIGINAL_DATASET_FILE, 'rb') as f:
+            data_buffer = f.read(BUFFER_SIZE)
+            while data_buffer:
+                self.client_socket.send(data_buffer)
+                data_buffer = f.read(BUFFER_SIZE)
+
+        fsize = os.path.getsize(QUERY_REDUCED_DATASET_FILE)
+        self.client_socket.send(str(fsize).encode('utf-8'))
+
+        with open(QUERY_REDUCED_DATASET_FILE, 'rb') as f:
             data_buffer = f.read(BUFFER_SIZE)
             while data_buffer:
                 self.client_socket.send(data_buffer)
