@@ -6,8 +6,8 @@ Python, PyQt, Matplotlib, Mplleaflet
 
 # Screenshot
 
-![Connecting to server](https://github.com/husmen/Trajectory-Mapping/images/Screenshot_1.png)
+![Connecting to server](https://github.com/husmen/Trajectory-Mapping/blob/master/images/Screenshot_1.png)
 
-![Plotting full dataset](https://github.com/husmen/Trajectory-Mapping/images/Screenshot_2.png)
+![Plotting full dataset](https://github.com/husmen/Trajectory-Mapping/blob/master/images/Screenshot_2.png)
 
-![Plotting reduced dataset](https://github.com/husmen/Trajectory-Mapping/images/Screenshot_3.png)
+![Plotting reduced dataset](https://github.com/husmen/Trajectory-Mapping/blob/master/images/Screenshot_3.png)
