@@ -88,17 +88,17 @@ class Box():
         '''
         # self bottom left corner
         aX1 = self.center.x - self.half_width
-        aY1 = self.center.y - self.half_width
+        aY1 = self.center.y - self.half_height
         # self top right corner
         aX2 = self.center.x + self.half_width
-        aY2 = self.center.y + self.half_width
+        aY2 = self.center.y + self.half_height
         
         # other_box bottom left corner
         bX1 = other_box.center.x - other_box.half_width
-        bY1 = other_box.center.y - other_box.half_width
+        bY1 = other_box.center.y - other_box.half_height
         # other_box top right corner
         bX2 = other_box.center.x + other_box.half_width
-        bY2 = other_box.center.y + other_box.half_width
+        bY2 = other_box.center.y + other_box.half_height
 
         if aX1 < bX2 and aX2 > bX1 and aY1 < bY2 and aY2 > bY1:
             return True
@@ -190,38 +190,6 @@ class PRQuadTree():
             final_points.extend(se_q)
 
         return final_points
-
-    def query_k_nearest(self, point, k):
-        '''
-        Returns k points closest to the provided point.
-
-        Args:
-            point: a Point from which to search for other points.
-            k: number of closest points to return
-        
-        Returns:
-            A list of k closest points
-        ''' 
-        def _sort_key(p):
-            '''
-            Internal method used to provide python method with a key
-            (coordinate distance) on which to sort.
-
-            Args:
-                p: Point to sort
-
-            Returns:
-                A coordinate distance between the search point and 
-                the provided point
-            '''
-            return sqrt( pow(point.x-p.x, 2) + pow(p.y-point.y,2))
-        nearby = None
-        for i in range(1,20):
-            rng = Box(point, pow(2, i))
-            nearby = self.query_range(rng)
-            if len(nearby) >= k:
-                break
-        return sorted(nearby, key=_sort_key)[:k]
             
     
     def _subdivide(self):

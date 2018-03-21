@@ -5,7 +5,7 @@ server-app.py
 import threading
 import socket
 import time
-#import sys
+import sys
 import os
 
 from rdp import rdp
@@ -15,9 +15,9 @@ from prquadtree import *
 #TCP_IP = 'localhost'
 TCP_HOST = socket.gethostname()  # get local machine name
 TCP_HOST_IP = socket.gethostbyname(TCP_HOST)
-TCP_PORT = 9999  # set port
+TCP_PORT = 8000  # set port
 BUFFER_SIZE = 1024  # set 1024 bytes as buffer size
-EPS = 0.001
+EPS = 0.0005
 
 BOX_LIMIT = Box(Point(0,0), 180, 90)
 
@@ -33,7 +33,7 @@ EXIT_FLAG = False
 SERVER_SOCKET = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # bind to the port
-SERVER_SOCKET.bind((TCP_HOST, TCP_PORT))
+SERVER_SOCKET.bind(("0.0.0.0", TCP_PORT))
 
 # queue up to 5 requests
 SERVER_SOCKET.listen(5)
@@ -80,7 +80,6 @@ class ServerThread(threading.Thread):
                     #print('Received data = %s', (data))
                     rsize = rsize + len(data)
                     f.write(data)
-                    #fsize_current = os.path.getsize(RECEIVED_FILE)
                     #print(rsize)
                     if rsize >= fsize:
                         print('Breaking from file write')
@@ -88,8 +87,9 @@ class ServerThread(threading.Thread):
             print('Successfully get the file')
             self.process_data()
             self.send_files()
-            self.query()
-            self.send_files_2()
+            while True:
+                    self.query()
+                    self.send_files_2()
             self.client_socket.close()
 
     def query(self):
@@ -189,20 +189,22 @@ class ServerThread(threading.Thread):
         fsize = os.path.getsize(QUERY_ORIGINAL_DATASET_FILE)
         self.client_socket.send(str(fsize).encode('utf-8'))
 
-        with open(QUERY_ORIGINAL_DATASET_FILE, 'rb') as f:
-            data_buffer = f.read(BUFFER_SIZE)
-            while data_buffer:
-                self.client_socket.send(data_buffer)
+        if fsize:
+            with open(QUERY_ORIGINAL_DATASET_FILE, 'rb') as f:
                 data_buffer = f.read(BUFFER_SIZE)
+                while data_buffer:
+                    self.client_socket.send(data_buffer)
+                    data_buffer = f.read(BUFFER_SIZE)
 
         fsize = os.path.getsize(QUERY_REDUCED_DATASET_FILE)
         self.client_socket.send(str(fsize).encode('utf-8'))
 
-        with open(QUERY_REDUCED_DATASET_FILE, 'rb') as f:
-            data_buffer = f.read(BUFFER_SIZE)
-            while data_buffer:
-                self.client_socket.send(data_buffer)
+        if fsize:
+            with open(QUERY_REDUCED_DATASET_FILE, 'rb') as f:
                 data_buffer = f.read(BUFFER_SIZE)
+                while data_buffer:
+                    self.client_socket.send(data_buffer)
+                    data_buffer = f.read(BUFFER_SIZE)
 
 
 

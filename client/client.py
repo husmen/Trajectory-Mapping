@@ -11,26 +11,13 @@ import os
 import mplleaflet
 
 
-#from PyQt5.QtGui import QIcon
-#from PyQt5.QtWidgets import *
-
-#from PyQt5.QtWebKitWidgets import QWebPage as QWebEnginePage
-#from PyQt5.QtWebKitWidgets import QWebView as QWebEngineView
-#from PyQt5.QtWebKit import QWebSettings as QWebEngineSettings
-
-#from PyQt5.QtWebKit import QWebSettings
-#from PyQt5.QtWebKitWidgets import QWebPage, QWebView
-
-#from PyQt5.QtCore import pyqtSignal, QObject
 from PyQt5.QtCore import (QUrl, QFileInfo, QElapsedTimer)
 from PyQt5.QtWebEngineWidgets import (QWebEnginePage, QWebEngineView, QWebEngineSettings)
-#from PyQt5.QtWidgets import (QAction, QHBoxLayout, QTextEdit, QSizePolicy )
 from PyQt5.QtWidgets import (
     QMainWindow, QPushButton, QFileDialog, QApplication, QLabel,
-    QVBoxLayout, QWidget, QGridLayout, QComboBox, QDesktopWidget, QInputDialog, QLineEdit)
+    QVBoxLayout, QHBoxLayout, QWidget, QGridLayout, QComboBox, QDesktopWidget, QInputDialog, QLineEdit, QDoubleSpinBox)
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-#from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
@@ -40,7 +27,7 @@ import numpy as np
 #TCP_IP = 'localhost'
 TCP_HOST = socket.gethostname()  # get local machine name
 TCP_HOST_IP = socket.gethostbyname(TCP_HOST)
-TCP_PORT = 9999  # set port
+TCP_PORT = 8000  # set port
 BUFFER_SIZE = 1024  # set 1024 bytes as buffer
 ORIGINAL_DATASET_FILE = 'dataset_original.txt'
 REDUCED_DATASET_FILE = 'dataset_reduced.txt'
@@ -56,12 +43,12 @@ class Window(QMainWindow):
         self.conn_status = False
         self.query_status = False
         self.sckt = None
-        self.new_tcp_host = TCP_HOST_IP
+        self.new_tcp_host = "192.168.43.67" #TCP_HOST_IP
         self.init_ui()
-        self.q_p1_x = 116.3
-        self.q_p1_y = 39.9
+        self.q_p1_x = 116.30
+        self.q_p1_y = 39.97
         self.q_p2_x = 116.32
-        self.q_p2_y = 40
+        self.q_p2_y = 40.00
         self.query_elapsed = None
         self.proc_elapsed = 0
         self.timer = QElapsedTimer()
@@ -79,13 +66,10 @@ class Window(QMainWindow):
         self.custom_wid.control_wid.close_btn.clicked.connect(self.close_app)
         self.custom_wid.control_wid.plot_btn.clicked.connect(self.load_data)
         self.custom_wid.control_wid.query_btn.clicked.connect(self.query_region)
-        # self.custom_wid.control_wid.close_btn.clicked.connect(QApplication.instance().quit)
-        # self.custom_wid.control_wid.close_btn.clicked.connect(QApplication.instance().quit)
 
         self.setCentralWidget(self.custom_wid)
         self.statusBar()
         self.statusBar().showMessage('Ready')
-        #self.setGeometry(300, 300, 1280, 720)
         self.resize(1280, 720)
         self.center()
         self.setWindowTitle('Trajectory Mapping - Client App')
@@ -106,15 +90,23 @@ class Window(QMainWindow):
             'Enter server IP address:',QLineEdit.Normal,str(self.new_tcp_host))
         
         if ok:
+            # close existing socket
+            try:
+                self.sckt.close()
+            except:
+                pass
             # create a socket object
             self.sckt = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             # connection to hostname on the port.
             print(self.new_tcp_host)
-            self.sckt.connect((self.new_tcp_host, TCP_PORT))
-            self.conn_status = True
+            try:
+                self.sckt.connect((self.new_tcp_host, TCP_PORT))
+            except:
+                return
 
+            self.conn_status = True
             # send message to server
-            msg_to_send = 'Houssem'
+            msg_to_send = 'Houssem & Ayoub'
             self.sckt.send(msg_to_send.encode('utf-8'))
 
             # Receive no more than BUFFER_SIZE bytes
@@ -154,7 +146,6 @@ class Window(QMainWindow):
 
     def receive_files(self):
         ''' docstring'''
-        #time.sleep(2)
         
         with open(ORIGINAL_DATASET_FILE, 'wb') as f:
             print('Receiving data ...')
@@ -227,7 +218,7 @@ class Window(QMainWindow):
             reduced_dataset.append(tmp)
         #print(reduced_dataset)
 
-        reduction_rate = 100 * reduced_ds/full_ds
+        reduction_rate = 100 * (1-reduced_ds/full_ds)
         self.custom_wid.control_wid.label_1.setText("Full dataset: {}".format(full_ds))
         self.custom_wid.control_wid.label_2.setText("Reduced dataset: {}".format(reduced_ds))
         self.custom_wid.control_wid.label_3.setText("Reduction rate: {} %".format(round(reduction_rate,2)))
@@ -258,14 +249,17 @@ class Window(QMainWindow):
                 tmp[1] = float(tmp[1])
                 query_reduced_dataset.append(tmp)
 
+        else:
+            self.custom_wid.control_wid.coord1_x.setValue(reduced_dataset[0][0])
+            self.custom_wid.control_wid.coord1_y.setValue(reduced_dataset[0][1])
+            self.custom_wid.control_wid.coord2_x.setValue(reduced_dataset[-1][0])
+            self.custom_wid.control_wid.coord2_y.setValue(reduced_dataset[-1][1])
+
         self.custom_wid.control_wid.label_4.setText("Results ratio to full dataset: {} %".format(round(query_full_ratio)))
         self.custom_wid.control_wid.label_5.setText("Results ratio to reduced dataset: {} %".format(round(query_reduced_ratio)))
         
         xy = np.array(reduced_dataset)
         q_xy = np.array([])
-        #print(self.custom_wid.control_wid.combo_box.currentIndex())
-        #print(self.custom_wid.control_wid.combo_box.currentData())
-        #print(self.custom_wid.control_wid.combo_box.currentText())
         tmp = self.custom_wid.control_wid.combo_box.currentText()
         if tmp == "Full Dataset":
             xy = np.array(original_dataset)
@@ -273,9 +267,7 @@ class Window(QMainWindow):
         elif tmp == "Reduced Dataset":
             xy = np.array(reduced_dataset)
             q_xy = np.array(query_reduced_dataset)
-        #xy = np.fliplr(yx)
-        #print(yx)
-        #print(xy)
+
         # Plot the path as red dots connected by a blue line
         plt.hold(True)
         if self.query_status:
@@ -285,7 +277,7 @@ class Window(QMainWindow):
             ax.add_patch(rect)
             #plt.plot()
         plt.plot(xy[:,0], xy[:,1], 'ko')
-        if self.query_status:
+        if self.query_status and len(q_xy):
             plt.plot(q_xy[:,0], q_xy[:,1], 'rD')
         plt.plot(xy[:,0], xy[:,1], 'b')
 
@@ -295,17 +287,15 @@ class Window(QMainWindow):
         # Create the map. Save the file to basic_plot.html. _map.html is the default
         # if 'path' is not specified
         mplleaflet.show(inbrowser=False,path=mapfile)
-        #mplleaflet.save_html(mapfile)
-        #self.custom_wid.map_wid.load(QUrl(mapfile))
-        #self.custom_wid.map_wid.setUrl(QUrl("http://www.google.com/"))
-        #print(QUrl(mapfile))
-        #self.custom_wid.map_wid.setUrl(QUrl(mapfile))
         self.custom_wid.map_wid.setUrl(QUrl.fromLocalFile(QFileInfo(mapfile).absoluteFilePath()))
-        #mplleaflet.show(path=mapfile)
     def query_region(self):
         ''' docstring '''
         self.timer.restart()
         print('Sending query ...')
+        self.q_p1_x = self.custom_wid.control_wid.coord1_x.value()
+        self.q_p1_y = self.custom_wid.control_wid.coord1_y.value()
+        self.q_p2_x = self.custom_wid.control_wid.coord2_x.value()
+        self.q_p2_y = self.custom_wid.control_wid.coord2_y.value()
         msg_to_send = '{},{},{},{}'.format(self.q_p1_x,self.q_p1_y,self.q_p2_x,self.q_p2_y)
         self.sckt.send(msg_to_send.encode('utf-8'))
         print('Query sent ...')
@@ -315,30 +305,32 @@ class Window(QMainWindow):
             msg = self.sckt.recv(BUFFER_SIZE)
             fsize = int(msg.decode('utf-8'))
             rsize = 0
-            while True:
-                data = self.sckt.recv(BUFFER_SIZE)
-                #print('Received data = %s', (data))
-                rsize = rsize + len(data)
-                f.write(data)
-                #print(rsize)
-                if  rsize >= fsize:
-                    print('Breaking from query file write')
-                    break
+            if fsize:
+                while True:
+                    data = self.sckt.recv(BUFFER_SIZE)
+                    #print('Received data = %s', (data))
+                    rsize = rsize + len(data)
+                    f.write(data)
+                    #print(rsize)
+                    if  rsize >= fsize:
+                        print('Breaking from query file write')
+                        break
 
         with open(QUERY_REDUCED_DATASET_FILE, 'wb') as f:
             print('Receiving query data ...')
             msg = self.sckt.recv(BUFFER_SIZE)
             fsize = int(msg.decode('utf-8'))
             rsize = 0
-            while True:
-                data = self.sckt.recv(BUFFER_SIZE)
-                #print('Received data = %s', (data))
-                rsize = rsize + len(data)
-                f.write(data)
-                #print(rsize)
-                if  rsize >= fsize:
-                    print('Breaking from query file write')
-                    break
+            if fsize:
+                while True:
+                    data = self.sckt.recv(BUFFER_SIZE)
+                    #print('Received data = %s', (data))
+                    rsize = rsize + len(data)
+                    f.write(data)
+                    #print(rsize)
+                    if  rsize >= fsize:
+                        print('Breaking from query file write')
+                        break
 
         self.query_status = True
         self.query_elapsed = self.timer.nsecsElapsed()
@@ -387,11 +379,37 @@ class ControlWidget(QWidget):
         self.query_btn = QPushButton("Query")
         self.close_btn = QPushButton("Close")
 
+        self.coord1_x = QDoubleSpinBox()
+        self.coord1_y = QDoubleSpinBox()
+        self.coord2_x = QDoubleSpinBox()
+        self.coord2_y = QDoubleSpinBox()
+
+        self.label_p1 = QLabel(self)
+        self.label_p2 = QLabel(self)
+        self.label_p1.setText("P1 Coordinates")
+        self.label_p2.setText("P2 Coordinates")
+
+        self.coord1_x.setRange(-180.000, 180.000)
+        self.coord1_y.setRange(-90, 90)
+        self.coord2_x.setRange(-180, 180)
+        self.coord2_y.setRange(-90, 90)
+
+        self.coord1_x.setDecimals(6)
+        self.coord1_y.setDecimals(6)
+        self.coord2_x.setDecimals(6)
+        self.coord2_y.setDecimals(6)
+
+        self.coord1_x.setSingleStep(0.1)
+        self.coord1_y.setSingleStep(0.1)
+        self.coord2_x.setSingleStep(0.1)
+        self.coord2_y.setSingleStep(0.1)
+
         self.combo_box = QComboBox(self)
         self.combo_box.setToolTip(
             "Choose between Full or Reduced dataset")
         self.combo_box.addItem("Full Dataset")
         self.combo_box.addItem("Reduced Dataset")
+
 
         self.label_1 = QLabel(self)
         self.label_2 = QLabel(self)
@@ -408,9 +426,28 @@ class ControlWidget(QWidget):
         self.vbox.addWidget(self.open_btn)
         self.vbox.addWidget(self.combo_box)
         self.vbox.addWidget(self.plot_btn)
-        self.vbox.addWidget(self.select_btn)
+
+        self.vbox.addStretch(1)
+        self.hbox1 = QHBoxLayout(self)
+        self.hbox1.setSpacing(5)
+        self.hbox1.addWidget(self.coord1_x)
+        self.hbox1.addWidget(self.coord1_y)
+
+        self.hbox2 = QHBoxLayout(self)
+        self.hbox2.setSpacing(5)
+        self.hbox2.addWidget(self.coord2_x)
+        self.hbox2.addWidget(self.coord2_y)
+
+        self.vbox.addWidget(self.label_p1)
+        self.vbox.addLayout(self.hbox1)
+        self.vbox.addWidget(self.label_p2)
+        self.vbox.addLayout(self.hbox2)
+
         self.vbox.addWidget(self.query_btn)
+        self.vbox.addStretch(1)
+
         self.vbox.addWidget(self.close_btn)
+        self.vbox.addStretch(1)
         self.vbox.addWidget(self.label_1)
         self.vbox.addWidget(self.label_2)
         self.vbox.addWidget(self.label_3)
